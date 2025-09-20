@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🪙 Micro-Transaction Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .micro-amount {
+            font-size: 1.2em;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .info { background: rgba(33, 150, 243, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🪙 Micro-Transaction Testing</h1>
+        
+        <div class="card">
+            <h2>💡 Micro-Amount Presets</h2>
+            <p>Test with these tiny amounts (perfect for education!):</p>
+            
+            <div class="test-grid">
+                <button onclick="setAmount('0.000005')">
+                    📚 Course Price<br>
+                    <span class="micro-amount">0.000005 ETH</span><br>
+                    <small>~$0.01</small>
+                </button>
+                
+                <button onclick="setAmount('0.000001')">
+                    💝 Micro Donation<br>
+                    <span class="micro-amount">0.000001 ETH</span><br>
+                    <small>~$0.002</small>
+                </button>
+                
+                <button onclick="setAmount('0.00001')">
+                    🎯 Small Test<br>
+                    <span class="micro-amount">0.00001 ETH</span><br>
+                    <small>~$0.02</small>
+                </button>
+                
+                <button onclick="setAmount('0.0001')">
+                    🚀 Larger Test<br>
+                    <span class="micro-amount">0.0001 ETH</span><br>
+                    <small>~$0.20</small>
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧪 Test Transaction</h2>
+            
+            <div style="margin: 15px 0;">
+                <label>Amount (ETH):</label><br>
+                <input type="number" id="amount" step="0.000001" min="0.000001" 
+                       placeholder="0.000005" style="width: 100%; padding: 10px; border-radius: 5px; border: none;">
+            </div>
+            
+            <div style="margin: 15px 0;">
+                <label>Purpose:</label><br>
+                <input type="text" id="purpose" placeholder="Micro-donation for education" 
+                       style="width: 100%; padding: 10px; border-radius: 5px; border: none;">
+            </div>
+            
+            <button onclick="connectAndTest()" style="width: 100%; font-size: 18px;">
+                🦊 Connect MetaMask & Test
+            </button>
+            
+            <div id="status" class="status info" style="display: none;">
+                Ready to test micro-transactions!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💰 Why Micro-Transactions?</h2>
+            <ul>
+                <li>🎓 <strong>Educational Access</strong>: Learning shouldn't be expensive</li>
+                <li>🌍 <strong>Global Reach</strong>: Affordable in any currency</li>
+                <li>🧪 <strong>Easy Testing</strong>: Low cost for development</li>
+                <li>⚡ <strong>Fast Adoption</strong>: Lower barrier to entry</li>
+                <li>📊 <strong>Volume Business</strong>: Many small transactions</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Technical Details</h2>
+            <div style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+                Contract Prices:<br>
+                • Course Purchase: 0.000005 ETH<br>
+                • Min Donation: 0.000001 ETH<br>
+                • Gas Cost: ~0.0001 ETH (Sepolia)<br>
+                • Total Cost: ~0.0001005 ETH
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script>
+        function setAmount(amount) {
+            document.getElementById('amount').value = amount;
+            showStatus(`Amount set to ${amount} ETH`, 'info');
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        async function connectAndTest() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not installed');
+                }
+
+                showStatus('Connecting to MetaMask...', 'info');
+                
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                const web3 = new Web3(window.ethereum);
+                const account = accounts[0];
+                const amount = document.getElementById('amount').value;
+                const purpose = document.getElementById('purpose').value || 'Micro-transaction test';
+
+                if (!amount || amount <= 0) {
+                    throw new Error('Please enter a valid amount');
+                }
+
+                if (amount < 0.000001) {
+                    throw new Error('Amount too small (minimum: 0.000001 ETH)');
+                }
+
+                showStatus(`Testing ${amount} ETH transaction...`, 'info');
+
+                // Simple transfer test (you can replace with contract call)
+                const amountWei = web3.utils.toWei(amount, 'ether');
+                
+                const tx = await web3.eth.sendTransaction({
+                    from: account,
+                    to: '0xA83dE1A13494B6B5bAaF6C7A30eC22acE666e0C0', // Your contract
+                    value: amountWei,
+                    gas: 21000
+                });
+
+                showStatus(`✅ Success! Micro-transaction sent: ${tx.transactionHash}`, 'success');
+                
+                // Calculate costs
+                const gasUsed = 21000;
+                const gasPrice = await web3.eth.getGasPrice();
+                const gasCost = web3.utils.fromWei((gasUsed * gasPrice).toString(), 'ether');
+                
+                setTimeout(() => {
+                    showStatus(`💰 Transaction: ${amount} ETH | Gas: ${parseFloat(gasCost).toFixed(6)} ETH`, 'info');
+                }, 3000);
+
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-set default amount
+        window.addEventListener('load', () => {
+            setAmount('0.000005');
+        });
+    </script>
+</body>
+</html>

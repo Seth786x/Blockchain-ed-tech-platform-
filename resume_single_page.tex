@@ -1,0 +1,331 @@
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot, % set margins without considering header and footer
+    top=1.5 cm, % reduced from 2cm
+    bottom=1.5 cm, % reduced from 2cm
+    left=1.5 cm, % reduced from 2cm
+    right=1.5 cm, % reduced from 2cm
+    footskip=0.8 cm, % reduced from 1.0cm
+    % showframe % for debugging 
+]{geometry} % for adjusting page geometry
+\usepackage{titlesec} % for customizing section titles
+\usepackage{tabularx} % for making tables with fixed width columns
+\usepackage{array} % tabularx requires this
+\usepackage[dvipsnames]{xcolor} % for coloring text
+\definecolor{primaryColor}{RGB}{0, 0, 0} % define primary color
+\usepackage{enumitem} % for customizing lists
+\usepackage{fontawesome5} % for using icons
+\usepackage{amsmath} % for math
+\usepackage[
+    pdftitle={SK Sahil Tarafdar's CV},
+    pdfauthor={SK Sahil Tarafdar},
+    pdfcreator={LaTeX with RenderCV},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref} % for links, metadata and bookmarks
+\usepackage[pscoord]{eso-pic} % for floating text on the page
+\usepackage{calc} % for calculating lengths
+\usepackage{bookmark} % for bookmarks
+\usepackage{lastpage} % for getting the total number of pages
+\usepackage{changepage} % for one column entries (adjustwidth environment)
+\usepackage{paracol} % for two and three column entries
+\usepackage{ifthen} % for conditional statements
+\usepackage{needspace} % for avoiding page brake right after the section title
+\usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Some settings:
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt} % remove space before adjustwidth environment
+\pagestyle{empty} % no header or footer
+\setcounter{secnumdepth}{0} % no section numbering
+\setlength{\parindent}{0pt} % no indentation
+\setlength{\topskip}{0pt} % no top skip
+\setlength{\columnsep}{0.15cm} % set column seperation
+\pagenumbering{gobble} % no page numbering
+
+\titleformat{\section}{\needspace{2\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{0.5pt}\titlerule]
+
+\titlespacing{\section}{
+    % left space:
+    -1pt
+}{
+    % top space:
+    0.15 cm % reduced further
+}{
+    % bottom space:
+    0.08 cm % reduced further
+} % section title spacing
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$} % custom bullet points
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.03 cm, % reduced further
+        parsep=0.03 cm, % reduced further
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0 cm + 10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.03 cm, % reduced further
+        parsep=0.03 cm, % reduced further
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights for bullet entries
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0 cm + 0.00001 cm
+    }{
+        0 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+} % new environment for one column entries
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for two column entries
+
+\newenvironment{threecolentry}[3][]{
+    \onecolentry
+    \def\thirdColumn{#3}
+    \setcolumnwidth{, \fill, 4.5 cm}
+    \begin{paracol}{3}
+    {\raggedright #2} \switchcolumn
+}{
+    \switchcolumn \raggedleft \thirdColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for three column entries
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+    \par\kern\topsep
+} % new environment for the header
+
+% save the original href command in a new command:
+\let\hrefWithoutArrow\href
+
+\begin{document}
+    \newcommand{\AND}{\unskip
+        \cleaders\copy\ANDbox\hskip\wd\ANDbox
+        \ignorespaces
+    }
+    \newsavebox\ANDbox
+    \sbox\ANDbox{$|$}
+
+    \begin{header}
+        \fontsize{22 pt}{22 pt}\selectfont SK SAHIL TARAFDAR
+
+        \vspace{3 pt}
+
+        \normalsize
+        \mbox{+91-9502350253}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{mailto:sahiltarafdar@outlook.com}{sahiltarafdar@outlook.com}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{https://sahiltarafdar.github.io/}{sahiltarafdar}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{te6h786x}%
+    \end{header}
+
+    \vspace{3 pt}
+
+    \section{Experience}
+
+        \begin{twocolentry}{
+            June 2024 – Aug 2024
+        }
+            \textbf{Blockchain Development Intern}, \href{https://metacrafters.io/}{\textbf{Metacrafters}}\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Completed comprehensive Summer Programme on "Blockchain Technology using Ethereum and Polygon" in partnership with \href{https://www.cuchd.in/}{\textbf{Chandigarh University}}
+                \item Mastered JavaScript fundamentals through \href{https://academy.metacrafters.io/}{\textbf{JS PROOF: Beginner Course}}, developing proficiency in core programming concepts
+                \item Gained hands-on experience with Ethereum blockchain development via \href{https://academy.metacrafters.io/}{\textbf{ETH PROOF: Beginner EVM Course}}
+            \end{highlights}
+        \end{onecolentry}
+
+    \section{Projects}
+
+        \begin{twocolentry}{
+            Aug 2025 – Present
+        }
+            \textbf{Blockchain EdTech Platform – Computer Hardware Education with Transparent Donations}\end{twocolentry>
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Tech Stack:} \href{https://vuejs.org/}{\textbf{JavaScript (Vue.js)}}, \href{https://fastapi.tiangolo.com/}{\textbf{Python FastAPI}}, \href{https://www.mongodb.com/}{\textbf{MongoDB}}, \href{https://ethereum.org/}{\textbf{Ethereum/Solidity}}, \href{https://ipfs.tech/}{\textbf{IPFS}}, \href{https://web3js.readthedocs.io/}{\textbf{Web3.js}}
+                \item Developed full-stack dApp enabling transparent donation management and automated resource allocation for computer hardware education using smart contracts
+                \item \textbf{Impact:} 100\% transparent fund allocation, immutable audit trails, reduced administrative overhead
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.1 cm}
+
+        \begin{twocolentry}{
+            Apr 2025 – June 2025
+        }
+            \textbf{Secure Note-Taking Web Application}\end{twocolentry>
+
+        \vspace{0.05 cm}
+        \begin{twocolentry}{
+            Aug 2025 – Present
+        }
+            	extbf{Blockchain EdTech Platform – Computer Hardware Education with Transparent Donations}
+        \end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Tech Stack:} \href{https://vuejs.org/}{\textbf{JavaScript (Vue.js)}}, \href{https://fastapi.tiangolo.com/}{\textbf{Python FastAPI}}, \href{https://www.mongodb.com/}{\textbf{MongoDB}}, \href{https://ethereum.org/}{\textbf{Ethereum/Solidity}}, \href{https://ipfs.tech/}{\textbf{IPFS}}, \href{https://web3js.readthedocs.io/}{\textbf{Web3.js}}
+                \item Developed a decentralized education platform integrating blockchain for secure course enrollment, donations, and credential verification
+                \item Designed and deployed smart contracts in Solidity to automate course access, donation tracking, and certificate issuance
+                \item Implemented FastAPI backend for seamless interaction between frontend, blockchain, and database systems
+                \item Built a user-friendly frontend enabling wallet connection, real-time transaction status, and media uploads
+                \item Established robust security measures including validation, access control, and audit logging for all blockchain operations
+                \item Achieved transparent, tamper-proof record keeping and improved trust in educational transactions
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Tech Stack:} \href{https://www.python.org/}{\textbf{Python}}, \href{https://fastapi.tiangolo.com/}{\textbf{FastAPI}}, \href{https://www.mongodb.com/}{\textbf{MongoDB}}, \href{https://developer.mozilla.org/en-US/docs/Web/HTML}{\textbf{HTML}}, \href{https://developer.mozilla.org/en-US/docs/Web/CSS}{\textbf{CSS}}, \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript}{\textbf{JavaScript}}
+                \item Developed comprehensive hardware analysis tool evaluating CPU-GPU bottlenecks with actionable insights and recommendations
+                \item Created optimization system identifying ideal CPU-GPU combinations, achieving up to 30\% performance improvements
+            \end{highlights}
+        \end{onecolentry}
+
+    \section{Education}
+
+        \begin{twocolentry}{
+            2022 – 2026
+        }
+            \textbf{\href{https://www.cuchd.in/}{\textbf{Chandigarh University}}}, B.E. in Computer Science Engineering -- Mohali, Punjab\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item CGPA: 7.3/10.0
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.08 cm}
+
+        \begin{twocolentry}{
+            2020
+        }
+            \textbf{\href{https://kv1visakhapatnam.kvs.ac.in/}{\textbf{Kendriya Vidyalaya}}}, Intermediate (CBSE) -- Visakhapatnam\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item 86.2\%
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.08 cm}
+
+        \begin{twocolentry}{
+            2018
+        }
+            \textbf{\href{https://navalbase.kvs.ac.in/}{\textbf{Navy Children School}}}, Matriculation (CBSE) -- Visakhapatnam\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item 84\%
+            \end{highlights}
+        \end{onecolentry}
+
+    \section{Skills}
+
+        \begin{onecolentry}
+            \textbf{Programming Languages:} \href{https://www.python.org/}{\textbf{Python}}, \href{https://www.java.com/}{\textbf{Java}}, \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript}{\textbf{JavaScript}}, \href{https://developer.mozilla.org/en-US/docs/Web/HTML}{\textbf{HTML}}, \href{https://developer.mozilla.org/en-US/docs/Web/CSS}{\textbf{CSS}}
+        \end{onecolentry}
+
+        \vspace{0.05 cm}
+
+        \begin{onecolentry}
+            \textbf{Frameworks \& Technologies:} \href{https://fastapi.tiangolo.com/}{\textbf{FastAPI}}, \href{https://vuejs.org/}{\textbf{Vue.js}}, \href{https://ethereum.org/}{\textbf{Ethereum/Solidity}}, \href{https://web3js.readthedocs.io/}{\textbf{Web3.js}}, \href{https://ipfs.tech/}{\textbf{IPFS}}
+        \end{onecolentry}
+
+        \vspace{0.05 cm}
+
+        \begin{onecolentry}
+            \textbf{Databases:} \href{https://www.mongodb.com/}{\textbf{MongoDB}}, \href{https://www.microsoft.com/en-us/sql-server}{\textbf{Microsoft SQL Server}} \quad \textbf{Tools:} \href{https://hardhat.org/}{\textbf{Hardhat}}, \href{https://metamask.io/}{\textbf{MetaMask}}, \href{https://git-scm.com/}{\textbf{Git}}
+        \end{onecolentry}
+
+        \vspace{0.05 cm}
+
+        \begin{onecolentry}
+            \textbf{Core Concepts:} Data Structures and Algorithms, Blockchain Technology, Smart Contract Development, RESTful APIs, Full-Stack Development
+        \end{onecolentry>
+
+    \section{Certifications}
+
+        \begin{twocolentry}{
+            2024
+        }
+            \textbf{\href{https://coursera.org/specializations/python-programming}{\textbf{Python Programming Specialization}}}, \href{https://coursera.org/}{\textbf{Coursera}}\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Mastered Python programming fundamentals, APIs, threading, and database integration
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.08 cm}
+
+        \begin{twocolentry}{
+            2024
+        }
+            \textbf{\href{https://coursera.org/learn/nosql-databases}{\textbf{NoSQL, SQL and Spark Foundation}}}, \href{https://coursera.org/}{\textbf{Coursera}}\end{twocolentry}
+
+        \vspace{0.05 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Learned comprehensive NoSQL concepts and MongoDB database management
+            \end{highlights}
+        \end{onecolentry}
+
+\end{document}

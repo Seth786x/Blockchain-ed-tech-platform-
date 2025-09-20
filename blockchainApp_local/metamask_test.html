@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Test - EdTech Blockchain App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .warning { background: rgba(255, 193, 7, 0.3); }
+        .info { background: rgba(33, 150, 243, 0.3); }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🦊 EdTech Blockchain App - MetaMask Test</h1>
+    
+    <div class="card">
+        <h2>📱 Connection Status</h2>
+        <div id="connectionStatus" class="status info">
+            Click "Connect MetaMask" to start testing
+        </div>
+        
+        <button id="connectBtn" onclick="connectMetaMask()">Connect MetaMask</button>
+        <button id="disconnectBtn" onclick="disconnectWallet()" class="hidden">Disconnect</button>
+    </div>
+
+    <div id="walletInfo" class="card hidden">
+        <h2>💰 Wallet Information</h2>
+        <p><strong>Address:</strong> <span id="walletAddress"></span></p>
+        <p><strong>Network:</strong> <span id="networkName"></span></p>
+        <p><strong>Balance:</strong> <span id="walletBalance"></span> ETH</p>
+        <p><strong>Contract Address:</strong> <span id="contractAddress"></span></p>
+    </div>
+
+    <div id="contractTest" class="card hidden">
+        <h2>🔗 Smart Contract Test</h2>
+        <p>Test donation to the EdTech platform:</p>
+        
+        <input type="number" id="donationAmount" placeholder="0.000005" step="0.000001" min="0.000001" max="0.01">
+        <input type="text" id="donationPurpose" placeholder="Test micro-donation for education">
+        <br>
+        <button onclick="testDonation()">Send Test Donation</button>
+        
+        <div id="transactionResult" class="status info hidden">
+            <h3>Transaction Result:</h3>
+            <div class="code" id="txHash"></div>
+        </div>
+    </div>
+
+    <div id="backendTest" class="card">
+        <h2>🖥️ Backend API Test</h2>
+        <button onclick="testBackend()">Test Backend Connection</button>
+        <div id="backendResult" class="status info hidden"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script>
+        let web3;
+        let account;
+        let contract;
+        
+        // Contract details
+        const CONTRACT_ADDRESS = '0xA83dE1A13494B6B5bAaF6C7A30eC22acE666e0C0';
+        const CONTRACT_ABI = [
+            {
+                "inputs": [{"internalType": "string", "name": "purpose", "type": "string"}],
+                "name": "donate",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": true, "internalType": "uint256", "name": "donationId", "type": "uint256"},
+                    {"indexed": true, "internalType": "address", "name": "donor", "type": "address"},
+                    {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+                    {"indexed": false, "internalType": "string", "name": "purpose", "type": "string"}
+                ],
+                "name": "DonationReceived",
+                "type": "event"
+            }
+        ];
+
+        async function connectMetaMask() {
+            try {
+                updateStatus('Connecting to MetaMask...', 'info');
+                
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask is not installed! Please install MetaMask.');
+                }
+
+                // Request account access
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                account = accounts[0];
+                web3 = new Web3(window.ethereum);
+                
+                // Get network info
+                const networkId = await web3.eth.net.getId();
+                const balance = await web3.eth.getBalance(account);
+                const balanceEth = web3.utils.fromWei(balance, 'ether');
+                
+                // Initialize contract
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                
+                // Update UI
+                document.getElementById('walletAddress').textContent = account;
+                document.getElementById('networkName').textContent = getNetworkName(networkId);
+                document.getElementById('walletBalance').textContent = parseFloat(balanceEth).toFixed(4);
+                document.getElementById('contractAddress').textContent = CONTRACT_ADDRESS;
+                
+                document.getElementById('walletInfo').classList.remove('hidden');
+                document.getElementById('contractTest').classList.remove('hidden');
+                document.getElementById('connectBtn').classList.add('hidden');
+                document.getElementById('disconnectBtn').classList.remove('hidden');
+                
+                updateStatus('✅ Successfully connected to MetaMask!', 'success');
+                
+                // Check network
+                if (networkId !== 11155111) {
+                    updateStatus('⚠️ Please switch to Sepolia testnet for full functionality', 'warning');
+                }
+                
+            } catch (error) {
+                updateStatus(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function testDonation() {
+            try {
+                const amount = document.getElementById('donationAmount').value;
+                const purpose = document.getElementById('donationPurpose').value || 'Test donation';
+                
+                if (!amount || amount <= 0) {
+                    throw new Error('Please enter a valid donation amount');
+                }
+                
+                updateStatus('Sending donation transaction...', 'info');
+                
+                const amountWei = web3.utils.toWei(amount, 'ether');
+                
+                const result = await contract.methods.donate(purpose).send({
+                    from: account,
+                    value: amountWei,
+                    gas: 100000
+                });
+                
+                document.getElementById('txHash').textContent = `Transaction Hash: ${result.transactionHash}`;
+                document.getElementById('transactionResult').classList.remove('hidden');
+                
+                updateStatus('✅ Donation sent successfully!', 'success');
+                
+            } catch (error) {
+                updateStatus(`❌ Transaction failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function testBackend() {
+            try {
+                updateStatus('Testing backend connection...', 'info');
+                
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                
+                document.getElementById('backendResult').innerHTML = `
+                    <h3>Backend Status:</h3>
+                    <div class="code">${JSON.stringify(data, null, 2)}</div>
+                `;
+                document.getElementById('backendResult').classList.remove('hidden');
+                
+                updateStatus('✅ Backend is running!', 'success');
+                
+            } catch (error) {
+                document.getElementById('backendResult').innerHTML = `
+                    <h3>Backend Error:</h3>
+                    <div class="code">${error.message}</div>
+                    <p>Make sure the backend server is running on port 8000</p>
+                `;
+                document.getElementById('backendResult').classList.remove('hidden');
+                updateStatus('❌ Backend connection failed', 'error');
+            }
+        }
+
+        function disconnectWallet() {
+            web3 = null;
+            account = null;
+            contract = null;
+            
+            document.getElementById('walletInfo').classList.add('hidden');
+            document.getElementById('contractTest').classList.add('hidden');
+            document.getElementById('connectBtn').classList.remove('hidden');
+            document.getElementById('disconnectBtn').classList.add('hidden');
+            document.getElementById('transactionResult').classList.add('hidden');
+            
+            updateStatus('Wallet disconnected', 'info');
+        }
+
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function getNetworkName(networkId) {
+            const networks = {
+                1: 'Ethereum Mainnet',
+                11155111: 'Sepolia Testnet',
+                1337: 'Local Network',
+                5: 'Goerli Testnet'
+            };
+            return networks[networkId] || `Unknown Network (${networkId})`;
+        }
+
+        // Test backend on page load
+        window.addEventListener('load', () => {
+            testBackend();
+        });
+    </script>
+</body>
+</html>
